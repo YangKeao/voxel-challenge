@@ -2,7 +2,7 @@ from scene import Scene
 import taichi as ti
 from taichi.math import *
 
-dark_mode = True
+dark_mode = False
 scene = Scene(voxel_edges=0.04 if not dark_mode else 0, exposure=1.5)
 scene.set_floor(-60, (1.0, 1.0, 1.0))
 if dark_mode:
