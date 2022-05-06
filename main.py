@@ -2,7 +2,7 @@ from scene import Scene
 import taichi as ti
 from taichi.math import *
 
-dark_mode = False
+dark_mode = True
 scene = Scene(voxel_edges=0.04 if not dark_mode else 0, exposure=1.5)
 scene.set_floor(-60, (1.0, 1.0, 1.0))
 if dark_mode:
@@ -14,19 +14,16 @@ icon_center = vec3(0, 0, 0)
 icon_size = 128
 line_color = vec3(23, 45, 114)/256 if not dark_mode else vec3(1, 1, 1)
 line_radius = 3
-shs = 8.0 # sin vertical scale
-svs = 6.0 # sin horizontal scale
+shs, svs = 8.0, 6.0
 pink_sphere_color = vec3(242, 92, 124) / 256 if not dark_mode else vec3(224, 105, 127) / 256
 blue_sphere_color = vec3(16, 166, 250) / 256 if not dark_mode else vec3(60, 160, 241)/256
 whilte_sphere_color = vec3(1, 1, 1)
 margin = 24
-sphere_radius = 7
-big_sphere_radius = 10
-disc_extra_radius = 1.5
+sphere_radius, big_sphere_radius, disc_extra_radius = 7,10,1.5
 disc_z_range = 4
 
 @ti.func
-def draw_sphere(center, radius, color, empty=False):
+def draw_sphere(center,radius,color,empty=False):
     sophistication = 2
     big_radius = int(sophistication * radius)
     for i, j, k in ti.ndrange((-big_radius, big_radius), (-big_radius, big_radius), (-big_radius, big_radius)):
@@ -48,21 +45,26 @@ def draw_disc(center, radius, color, z_range):
             scene.set_voxel(center + x, 1, color)
 
 @ti.func
-def draw_sin_curve(translation, r_axis, r_angle, color, period,
-                   phase, length, scale, radius):
+def draw_sin_curve(translation,r_axis,r_angle,color,period,phase,length,scale,radius,skip=vec2(0.0, 0.0)):
     sophistication = 50
     for big_x in range(length * sophistication):
         x = big_x / sophistication
-        y = scale * ti.sin(x / period * 2 * pi + phase)
-        rotated = rotate3d(vec3(x, y, 0), r_axis, r_angle)
-        draw_sphere(translation + rotated, radius, color)
+        if not (x > skip[0] and x < skip[1]):
+            y = scale * ti.sin(x / period * 2 * pi + phase)
+            rotated = rotate3d(vec3(x, y, 0), r_axis, r_angle)
+            draw_sphere(translation + rotated, radius, color)
 
 @ti.kernel
 def initialize_voxels():
     for line_y in range(3):
         translation=vec3(-icon_size/2,line_y*icon_size/2-icon_size/2+shs/2-(line_y-1)*margin,0)+icon_center
+        skip=vec2(0.0, 0.0)
+        if line_y == 2:
+            skip=vec2(icon_size/2-30, icon_size/2-20)
+        if line_y == 0:
+            skip=vec2(icon_size/2+24, icon_size/2+34)
         draw_sin_curve(translation, vec3(1, 0, 0), 0.0, line_color,
-                       icon_size * 2, pi, icon_size, shs, line_radius)
+                       icon_size * 2, pi, icon_size, shs, line_radius,skip)
     for line_x in range(3):
         translation=vec3(line_x*icon_size/2-icon_size/2+svs/2-(line_x-1)*margin,-icon_size/2,0)+icon_center
         draw_sin_curve(translation, vec3(0, 0, 1), pi / 2, line_color,
