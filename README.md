@@ -2,7 +2,7 @@
 
 <p align="center">
 <img src="demo.jpg" width="75%"></img>
-<img src="screenshot/main.py-2022-05-06-113738.jpg" width="75%"></img>
+<img src="screenshot/main.py-2022-05-06-122810.jpg" width="75%"></img>
 </p>
 
 > Figure: result of `python3 example6.py`. Please replace the image above (`demo.jpg`) with yours, so that other people can immediately see your results :-)
