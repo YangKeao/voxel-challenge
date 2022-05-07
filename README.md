@@ -1,8 +1,20 @@
 # <a name="title">Taichi Voxel Challenge</a>
 
+Now it's really a chaos :)
+
+Inspired by [Pictures of hyberbolic dynamic systems](https://www.lpsm.paris/pageperso/coudene/pictures.pdf)
+
 <p align="center">
 <img src="demo.jpg" width="75%"></img>
-<img src="screenshot/main.py-2022-05-06-123923.jpg" width="75%"></img>
+</p>
+
+## Bonus
+
+There is another kind of chaos in software world
+
+<p align="center">
+<img src="screenshot/main.py-2022-05-06-133309.jpg" width="75%"></img>
+<img src="screenshot/main.py-2022-05-06-133337.jpg" width="75%"></img>
 </p>
 
 > Figure: result of `python3 example6.py`. Please replace the image above (`demo.jpg`) with yours, so that other people can immediately see your results :-)
