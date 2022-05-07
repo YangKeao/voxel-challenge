@@ -19,22 +19,30 @@ max_count = 100
 gc_radius = 1
 garbage_threshold = 2
 
+
 @ti.func
 def f(p, sign, sigma):
     x = sign * p.z
     y = ti.sqrt(p.xy.dot(p.xy))*(
-        p.y * ti.exp(sigma / 2 * (p.xy.dot(p.xy))) * ti.cos(pi / 2 * (p.z * ti.sqrt(2) + 1))
-        + sign * p.x * ti.exp(-sigma/2 * (p.xy.dot(p.xy))) * ti.sin(pi / 2 * (p.z * ti.sqrt(2) + 1))
+        p.y * ti.exp(sigma / 2 * (p.xy.dot(p.xy))) *
+        ti.cos(pi / 2 * (p.z * ti.sqrt(2) + 1))
+        + sign * p.x * ti.exp(-sigma/2 * (p.xy.dot(p.xy))) *
+        ti.sin(pi / 2 * (p.z * ti.sqrt(2) + 1))
     ) / ti.sqrt(
-        p.x * p.x * ti.exp(-sigma * p.xy.dot(p.xy)) + p.y * p.y * ti.exp(sigma * p.xy.dot(p.xy))
+        p.x * p.x * ti.exp(-sigma * p.xy.dot(p.xy)) + p.y *
+        p.y * ti.exp(sigma * p.xy.dot(p.xy))
     )
     z = ti.sqrt(p.xy.dot(p.xy))*(
-        p.y * ti.exp(sigma / 2 * (p.xy.dot(p.xy))) * ti.sin(pi / 2 * (p.z * ti.sqrt(2) + 1))
-        - sign * p.x * ti.exp(-sigma/2 * (p.xy.dot(p.xy))) * ti.cos(pi / 2 * (p.z * ti.sqrt(2) + 1))
+        p.y * ti.exp(sigma / 2 * (p.xy.dot(p.xy))) *
+        ti.sin(pi / 2 * (p.z * ti.sqrt(2) + 1))
+        - sign * p.x * ti.exp(-sigma/2 * (p.xy.dot(p.xy))) *
+        ti.cos(pi / 2 * (p.z * ti.sqrt(2) + 1))
     ) / ti.sqrt(
-        p.x * p.x * ti.exp(-sigma * p.xy.dot(p.xy)) + p.y * p.y * ti.exp(sigma * p.xy.dot(p.xy))
+        p.x * p.x * ti.exp(-sigma * p.xy.dot(p.xy)) + p.y *
+        p.y * ti.exp(sigma * p.xy.dot(p.xy))
     )
     return vec3(x, y, z)
+
 
 @ti.func
 def step(p, sigma):
@@ -42,10 +50,11 @@ def step(p, sigma):
     positive = f(negative, 1.0, sigma)
     return positive
 
+
 @ti.kernel
 def initialize_voxels():
     for i, j, k in ti.ndrange((-radius, radius), (-radius, radius), (-radius, radius)):
-        big_p = vec3(i,j,k)
+        big_p = vec3(i, j, k)
         p = vec3(i/radius, j/radius, k/radius)
         if ti.sqrt(big_p.dot(big_p)) - radius > -sphere_bias and ti.sqrt(big_p.dot(big_p)) - radius < 0:
             ti.loop_config(serialize=True)
@@ -54,8 +63,9 @@ def initialize_voxels():
 
             scene.set_voxel(p.normalized() * radius, 1, color)
 
-    for i, j, k in ti.ndrange((-inner_radius, inner_radius), (-inner_radius, inner_radius), (-inner_radius, inner_radius)):
-        big_p = vec3(i,j,k)
+    for i, j, k in ti.ndrange((-inner_radius, inner_radius), (-inner_radius, inner_radius),
+                              (-inner_radius, inner_radius)):
+        big_p = vec3(i, j, k)
         p = vec3(i/radius, j/radius, k/radius)
         if ti.sqrt(big_p.dot(big_p)) - inner_radius > -sphere_bias and ti.sqrt(big_p.dot(big_p)) - inner_radius < 0:
             scene.set_voxel(big_p, 1, inner_color)
